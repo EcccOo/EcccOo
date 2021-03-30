@@ -1,0 +1,223 @@
+训练营SQL TASK01 NOTES
+
+1.参照《本地MySQL环境搭建方法介绍》指示下载安装MySQL和DBeaver
+【快速链接: http://tianchi-media.oss-cn-beijing.aliyuncs.com/dragonball/SQL/other/本地MySQL环境搭建方法介绍.pdf】
+* 由于日常用电脑为Mac Air，在环境搭载过程中MySQL WorkBench出现错误，经过多次尝试，卸载重装5次后仍未能正常运行...（一度想要换个电脑）
+* 最终决定使用提供全平台支持的DBeaver，下载时记得选择Community版本（免费嗷）
+
+2. 通读全篇文章并记录重点，在此过程中，我使用了xmind进行大纲整理（简单记录即可，主要是为了有个大概印象）
+
+3. 开启MySQL的第一次hands-on之旅，以次运行语句以下语句
+
+# 创建数据库【shop】
+CREATE DATABASE shop;
+
+# 创建数据表【product】
+CREATE TABLE product(
+    product_id CHAR(4) NOT NULL,
+    product_name VARCHAR(100) NOT NULL,
+    product_type VARCHAR(32) NOT NULL,
+    sale_price INTEGER,
+    purchase_price INTEGER,
+    regist_date DATE,
+    PRIMARY KEY(product_id));
+
+# 在【product】中插入数据
+INSERT INTO product VALUES('0001','T恤衫','衣服',1000,500,'2009-09-20');
+INSERT INTO product VALUES('0002', '打孔器', '办公用品', 500, 320, '2009-09-11');
+INSERT INTO product VALUES('0003', '运动T恤', '衣服', 4000, 2800, NULL);
+INSERT INTO product VALUES('0004', '菜刀', '厨房用具', 3000, 2800, '2009-09-20');
+INSERT INTO product VALUES('0005', '高压锅', '厨房用具', 6800, 5000, '2009-01-15');
+INSERT INTO product VALUES('0006', '叉子', '厨房用具', 500, NULL, '2009-09-20');
+INSERT INTO product VALUES('0007', '擦菜板', '厨房用具', 880, 790, '2008-04-28');
+INSERT INTO product VALUES('0008', '圆珠笔', '办公用品', 100, NULL, '2009-11-11');
+
+# 查看【product】的结构的详细信息 —— 该步在实际运行中重复使用多次，以随时了解数据结构的更新
+DESC product;
+
+# 从【product】中选取所有数据，查看结果集 —— 该步在实际运行中重复使用多次，以随时了解数据内容的更新
+SELECT * FROM product;
+
+# 删除【product】
+DROP TABLE product;
+
+# 尝试查看【product】的结构，由于表已被删除，该步会报错
+DESC product;
+
+# 重新创建数据表【product】
+CREATE TABLE product(
+    product_id CHAR(4) NOT NULL,
+    product_name VARCHAR(100) NOT NULL,
+    product_type VARCHAR(32) NOT NULL,
+    sale_price INTEGER,
+    purchase_price INTEGER,
+    regist_date DATE,
+    PRIMARY KEY(product_id));
+INSERT INTO product VALUES('0001','T恤衫','衣服',1000,500,'2009-09-20');
+INSERT INTO product VALUES('0002', '打孔器', '办公用品', 500, 320, '2009-09-11');
+INSERT INTO product VALUES('0003', '运动T恤', '衣服', 4000, 2800, NULL);
+INSERT INTO product VALUES('0004', '菜刀', '厨房用具', 3000, 2800, '2009-09-20');
+INSERT INTO product VALUES('0005', '高压锅', '厨房用具', 6800, 5000, '2009-01-15');
+INSERT INTO product VALUES('0006', '叉子', '厨房用具', 500, NULL, '2009-09-20');
+INSERT INTO product VALUES('0007', '擦菜板', '厨房用具', 880, 790, '2008-04-28');
+INSERT INTO product VALUES('0008', '圆珠笔', '办公用品', 100, NULL, '2009-11-11');
+
+# 查看【product】的数据结构和所有数据
+DESC product;
+SELECT * FROM product;
+
+# 添加列【product_name_pinyin】可存储100位的可变长字符串
+ALTER TABLE product ADD COLUMN product_name_pinyin VARCHAR(100);
+
+DESC product;
+SELECT * FROM product;
+
+# 删除列【product_name_pinyin】
+ALTER TABLE product DROP COLUMN product_name_pinyin;
+
+DESC product;
+SELECT * FROM product;
+
+# 修改【product】中所有的注册时间，由于没有WHERE语句，会报提示
+UPDATE product
+   SET regist_date = '2009-10-10';  
+
+SELECT * FROM product;
+
+# 仅修改【product】中，“厨具用品”商品的单价
+UPDATE product
+   SET sale_price = sale_price * 10
+   WHERE product_type = '厨房用具';  
+
+SELECT * FROM product;
+
+# 将【product】中商品编号为0008的数据登记日期更新为NULL
+UPDATE product
+   SET regist_date = NULL
+   WHERE product_id = '0008';  
+
+SELECT * FROM product;
+
+# 仅修改【product】中，“厨具用品”商品的销售单价为10倍，且进货价为一半
+UPDATE product
+   SET sale_price = sale_price * 10
+   WHERE product_type = '厨房用具';
+UPDATE product
+   SET purchase_price = purchase_price / 2
+   WHERE product_type = '厨房用具';  
+
+SELECT * FROM product;
+
+# 上列代码的简化版本
+UPDATE product
+   SET sale_price = sale_price * 10,
+       purchase_price = purchase_price / 2
+   WHERE product_type = '厨房用具';  
+
+SELECT * FROM product;
+
+# 创建表【productins】
+CREATE TABLE productins
+(product_id    CHAR(4)      NOT NULL,
+product_name   VARCHAR(100) NOT NULL,
+product_type   VARCHAR(32)  NOT NULL,
+sale_price     INTEGER      DEFAULT 0,
+purchase_price INTEGER ,
+regist_date    DATE ,
+PRIMARY KEY (product_id)); 
+
+SELECT * FROM productins;
+
+# 对【productins】进行全列添加数据
+INSERT INTO productins (product_id, product_name, product_type, sale_price, purchase_price, regist_date) 
+VALUES ('0005', '高压锅', '厨房用具', 6800, 5000, '2009-01-15');
+
+SELECT * FROM productins;
+
+# 省略列清单进行全列添加数据
+INSERT INTO productins VALUES ('0001', '高压锅', '厨房用具', 6800, 5000, '2009-01-15');  
+
+SELECT * FROM productins;
+
+# 一次插入多行数据
+INSERT INTO productins 
+VALUES ('0002', '打孔器', '办公用品', 500, 320, '2009-09-11'),
+('0003', '运动T恤', '衣服', 4000, 2800, NULL),
+('0004', '菜刀', '厨房用具', 3000, 2800, '2009-09-20');  
+
+SELECT * FROM productins;
+
+# 给【purchase_price】赋予NULL值，切记该列不能设置 NOT NULL 约束
+INSERT INTO productins (product_id, product_name, product_type, sale_price, purchase_price, regist_date) 
+VALUES ('0006', '叉子', '厨房用具', 500, NULL, '2009-09-20');  
+
+SELECT * FROM productins;
+
+# 在创建表【productcopy】时设置DEFAULT约束来设定默认值
+CREATE TABLE productcopy
+(product_id    CHAR(4)      NOT NULL,
+product_name   VARCHAR(100) NOT NULL,
+product_type   VARCHAR(32)  NOT NULL,
+sale_price     INTEGER      DEFAULT 0,
+purchase_price INTEGER ,
+regist_date    DATE ,
+PRIMARY KEY (product_id)); 
+
+SELECT * FROM productcopy;
+
+# 使用INSERT … SELECT语句从【productions】复制数据到【productcopy】中
+INSERT INTO productcopy (product_id, product_name, product_type, sale_price, purchase_price, regist_date)
+SELECT product_id, product_name, product_type, sale_price, purchase_price, regist_date FROM productins;  
+
+SELECT * FROM productcopy;
+
+# 清空表【productcopy】的内容
+TRUNCATE TABLE productcopy;
+
+SELECT * FROM productcopy;
+
+# 删除表，可以不删除=。=
+DROP TABLE product;
+DROP TABLE productins;
+DROP TABLE productcopy;
+
+4. 练习题
+Ex1. 
+# 创建表【Addressbook】
+CREATE TABLE Addressbook(
+regist_no    INTEGER NOT NULL,
+name   VARCHAR(128) NOT NULL,
+address   VARCHAR(256) NOT NULL,
+tel_no     CHAR(10),
+mail_address CHAR(20) ,
+PRIMARY KEY (regist_no));
+# 查看【Addressbook】的数据结构和所有数据
+DESC Addressbook;
+SELECT * FROM Addressbook;
+
+Ex2. 
+# 添加列【postal_code】到表【Addressbook】中
+ALTER TABLE Addressbook ADD COLUMN postal_code CHAR(8) NOT NULL;
+# 查看【Addressbook】的数据结构和所有数据
+DESC Addressbook;
+SELECT * FROM Addressbook;
+
+Ex3. 
+# 删除表【Addressbook】
+DROP TABLE Addressbook; 
+# 尝试查看【Addressbook】的数据结构，由于数据表被删除，该指令运行后会报错
+DESC product;
+
+Ex4. 
+# 已删除的表无法恢复，重新使用Ex1.中的代码重新创建数据表
+CREATE TABLE Addressbook(
+regist_no    INTEGER NOT NULL,
+name   VARCHAR(128) NOT NULL,
+address   VARCHAR(256) NOT NULL,
+tel_no     CHAR(10),
+mail_address CHAR(20) ,
+PRIMARY KEY (regist_no));
+# 查看【Addressbook】的数据结构和所有数据
+DESC Addressbook;
+SELECT * FROM Addressbook;
+
